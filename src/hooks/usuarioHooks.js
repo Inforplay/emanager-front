@@ -9,7 +9,6 @@ export const useLoginUsuario = () => {
         }
     })
 }
-
 export const useBuscarUsuario = () => {
     return useQuery({
         queryKey: ["usuarios"],
@@ -25,7 +24,6 @@ export const useCriarUsuario = () => {
         mutationFn: async (dados) => {
             const response = await API.post("/usuarios", dados);
             return response.data;
-            
         },
         onSuccess: () => {
             queryClient.invalidateQueries({
