@@ -1,27 +1,31 @@
-import { Button, Drawer, Form, Input, Popconfirm, Table } from "antd";
-import { useBuscarNivel, useCriarNivel, useDeletarNivel, useEditarNivel } from "../hooks/nivelHooks";
+import { Button, Drawer, Form, Input, Popconfirm, Select, Table } from "antd";
+import { useBuscarUsuario, useCriarUsuario, useDeletarUsuario, useEditarUsuario } from "../hooks/usuarioHooks";
 import { BiPencil, BiTrash } from "react-icons/bi";
 import { useContext, useState } from "react";
 import { AntContext } from "../contexts/AntProvider";
+import { useBuscarNivel } from "../hooks/nivelHooks";
 
-const Niveis = () => {
+const Usuarios = () => {
 
-    const { data: niveis } = useBuscarNivel();
-    const { mutateAsync: criarNivel } = useCriarNivel();
-    const { mutateAsync: editarNivel } = useEditarNivel();
-    const { mutateAsync: deletarNivel } = useDeletarNivel();
+    const { data: usuarios } = useBuscarUsuario();
+    const { data: niveis, isFetched: niveisCarregados } = useBuscarNivel();
+    const { mutateAsync: criarUsuario } = useCriarUsuario();
+    const { mutateAsync: editarUsuario } = useEditarUsuario();
+    const { mutateAsync: deletarUsuario } = useDeletarUsuario();
     const { api } = useContext(AntContext);
     const [verCriar, setVerCriar] = useState(false);
     const [verEditar, setVerEditar] = useState(false);
     const [formEditar] = Form.useForm();
+    const [formCriar] = Form.useForm();
 
     function criar(dados) {
-        criarNivel(dados, {
+        criarUsuario(dados, {
             onSuccess: (response) => {
                 setVerCriar(false);
                 api[response.tipo]({
                     description: response.mensagem
                 })
+                formCriar.resetFields()
             },
             onError: (response) => {
                 api[response.tipo]({
@@ -32,7 +36,7 @@ const Niveis = () => {
     }
 
     function editar(dados) {
-        editarNivel(dados, {
+        editarUsuario(dados, {
             onSuccess: (response) => {
                 setVerEditar(false);
                 api[response.tipo]({
@@ -48,7 +52,7 @@ const Niveis = () => {
     }
 
     function deletar(id) {
-        deletarNivel(id, {
+        deletarUsuario(id, {
             onSuccess: (response) => {
                 api[response.tipo]({
                     description: response.mensagem
@@ -65,11 +69,11 @@ const Niveis = () => {
     return (
         <div className="p-15">
             <div className="flex items-center justify-between mb-4">
-                <h1>Pagina de Niveis</h1>
-                <Button type="primary" onClick={() => setVerCriar(true)}>Novo nivel</Button>
+                <h1>Pagina de Usuários</h1>
+                <Button type="primary" onClick={() => setVerCriar(true)}>Novo Usuário</Button>
             </div>
             <Table
-                dataSource={niveis || []}
+                dataSource={usuarios || []}
                 rowKey={"id"}
             >
                 <Table.Column
@@ -86,14 +90,13 @@ const Niveis = () => {
                 <Table.Column
                     title={"Ações"}
                     className="w-[100px]"
-                    render={(_, nivel) => (
+                    render={(_, usuarios) => (
                         <div className="flex gap-3">
                             <BiPencil
                                 size={18}
                                 onClick={() => {
                                     formEditar.setFieldsValue({
-                                        id: nivel.id,
-                                        nome: nivel.nome
+                                        ...usuarios
                                     });
                                     setVerEditar(true);
                                 }}
@@ -101,7 +104,7 @@ const Niveis = () => {
                             <Popconfirm
                                 title="Aviso:"
                                 description="Deseja realmente apagar?"
-                                onConfirm={() => deletar(nivel.id)}
+                                onConfirm={() => deletar(usuarios.id)}
                                 okText="Sim"
                                 cancelText="Não"
                             >
@@ -120,6 +123,7 @@ const Niveis = () => {
                 <Form
                     layout="vertical"
                     onFinish={criar}
+                    form={formCriar}
                 >
                     <Form.Item
                         label={"Nome"}
@@ -129,6 +133,37 @@ const Niveis = () => {
                         <Input />
                     </Form.Item>
 
+                    <Form.Item
+                        label={"Email"}
+                        name={"email"}
+                        rules={[{ required: true, message: "Campo obrigatório" }]}
+                    >
+                        <Input />
+                    </Form.Item>
+
+                    <Form.Item
+                        label={"Senha"}
+                        name={"senha"}
+                        rules={[{ required: true, message: "Campo obrigatório" }]}
+                    >
+                        <Input.Password/>
+                    </Form.Item>
+
+                    <Form.Item
+                        label={"Nivel"}
+                        name={"nivel_id"}
+                        rules={[{ required: true, message: "Campo obrigatório" }]}
+                    >
+                       <Select
+                          options={niveisCarregados ? niveis.map(nivel => {
+                            return { 
+                                value : nivel.id, 
+                                label : nivel.nome
+                            }
+                          }) : []}  
+                       />
+                    </Form.Item>
+                    
                     <Button htmlType="submit" type="primary">Criar</Button>
                 </Form>
             </Drawer>
@@ -142,6 +177,7 @@ const Niveis = () => {
                     layout="vertical"
                     onFinish={editar}
                     form={formEditar}
+                   
                 >
                     <Form.Item
                         hidden
@@ -149,12 +185,44 @@ const Niveis = () => {
                     >
                         <Input />
                     </Form.Item>
+
                     <Form.Item
                         label={"Nome"}
                         name={"nome"}
                         rules={[{ required: true, message: "Campo obrigatório" }]}
                     >
                         <Input />
+                    </Form.Item>
+
+                    <Form.Item
+                        label={"Email"}
+                        name={"email"}
+                        rules={[{ required: true, message: "Campo obrigatório" }]}
+                    >
+                        <Input />
+                    </Form.Item>
+
+                    <Form.Item
+                        label={"Senha"}
+                        name={"senha"}
+                        rules={[{ required: true, message: "Campo obrigatório" }]}
+                    >
+                        <Input.Password/>
+                    </Form.Item>
+
+                    <Form.Item
+                        label={"Nivel"}
+                        name={"nivel_id"}
+                        rules={[{ required: true, message: "Campo obrigatório" }]}
+                    >
+                       <Select
+                          options={niveisCarregados ? niveis.map(nivel => {
+                            return { 
+                                value : nivel.id, 
+                                label : nivel.nome
+                            }
+                          }) : []}  
+                       />
                     </Form.Item>
 
                     <Button htmlType="submit" type="primary">Editar</Button>
@@ -164,4 +232,4 @@ const Niveis = () => {
     );
 }
 
-export default Niveis;
+export default Usuarios;
