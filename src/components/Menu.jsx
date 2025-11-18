@@ -13,6 +13,9 @@ const Menu = () => {
                 <li>
                     <NavLink to={"/dashboard/usuarios"}>Usuarios</NavLink>
                 </li>
+                <li>
+                    <NavLink to={"/dashboard/plataformas"}>Plataformas</NavLink>
+                </li>
             </ul>
         </div>
     );
