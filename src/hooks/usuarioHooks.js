@@ -24,6 +24,7 @@ export const useCriarUsuario = () => {
         mutationFn: async (dados) => {
             const response = await API.post("/usuarios", dados);
             return response.data;
+            
         },
         onSuccess: () => {
             queryClient.invalidateQueries({
