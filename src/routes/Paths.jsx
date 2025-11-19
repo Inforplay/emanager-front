@@ -8,6 +8,7 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import NotFound from "../pages/NotFound";
 import Usuarios from "../pages/Usuarios";
 import Plataformas from "../pages/Plataformas";
+import Clientes from "../pages/Clientes";
 
 const Paths = () => {
     return (
@@ -20,6 +21,7 @@ const Paths = () => {
                         <Route path="/dashboard/niveis" element={<Niveis />} />
                         <Route path="/dashboard/usuarios" element={<Usuarios />} />
                         <Route path="/dashboard/plataformas" element={<Plataformas />} />
+                        <Route path="/dashboard/clientes" element={<Clientes />} />
                     </Route>
 
                     <Route path="*" element={<NotFound />} />
